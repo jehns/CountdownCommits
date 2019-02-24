@@ -48,10 +48,17 @@ class App extends Component {
   }
 
   render() {
+    let days = Math.floor(this.state.timeLeft / (60 * 60 * 24));
+    let hours = Math.floor((this.state.timeLeft % (60 * 60 * 24)) / (60 * 60));
+    let minutes = Math.floor((this.state.timeLeft % (60 * 60)) / (60));
+    let seconds = Math.floor((this.state.timeLeft % (60)));
     return (
       <div className="App">
         <ul>
-          <li>{this.state.timeLeft}</li>
+        <li>days{days}</li>
+        <li>hours{hours}</li>
+        <li>minutes{minutes}</li>
+        <li>seconds{seconds}</li>
         </ul>
       </div>
     );
