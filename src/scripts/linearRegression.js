@@ -36,10 +36,9 @@ const linearRegressionWrapper = () => {
       let m = (count*sumXY - sumX*sumY) / (count*sumXX - sumX*sumX);
       let b = (sumY/count) - (m*sumX)/count;
 
-      return {m, b}
+      return { m, b }
 
     }
-
     /*
     This is the first time the function has been called, initialize variables to zero
     */
@@ -84,7 +83,7 @@ const linearRegressionWrapper = () => {
     let m = (count*sumXY - sumX*sumY) / (count*sumXX - sumX*sumX);
     let b = (sumY/count) - (m*sumX)/count;
 
-    return {m, b}
+    return { m, b }
 
   }
 

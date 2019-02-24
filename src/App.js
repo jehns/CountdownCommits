@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import linearRegressionWrapper from './scripts/linearRegression';
-import { Statistic, Container, Header, Button } from 'semantic-ui-react';
+import { Statistic, Container, Header, Button, Modal, Grid } from 'semantic-ui-react';
 import axios from 'axios';
 
 // global variable -> creates function for finding linear regression
@@ -12,18 +12,24 @@ class App extends Component {
     super()
     this.state={
       data: [],
-      timeLeft: 0
+      timeLeft: 0,
+      commitButtonDisabled: false,
+      toggleModal: false
     }
     this.handleCommitButtonClick = this.handleCommitButtonClick.bind(this)
+    this.handleModalClose = this.handleModalClose.bind(this)
   }
 
   async componentDidMount() {
     try {
+      // fetch commit data from API.
       const { data } = await axios.get('https://api.staging.coord.co/codechallenge/commits')
+
+      // initialize data for linear regression calculation
       let xValues = new Array(data.length).fill(1).map((num, i) => i)
       let yValues = data.reverse()
 
-      // calculate linear regression with api data
+      // calculate linear regression of api data. returns m & b from equation y = x * m + b
       let linearRegressionResult = linearRegressionCalc(xValues, yValues)
 
       // find the remaining time from current commit to the 2000th commit
@@ -35,12 +41,15 @@ class App extends Component {
         timeLeft: remainingTimeInSeconds
       })
 
-      // call setInterval to update the estimated remaining time on state
+      // use setInterval to update the estimated remaining time on state every second
       let timer = setInterval(() => {
-        this.setState({
-          timeLeft: this.state.timeLeft - 1
-        })
-        if (this.state.timeLeft < 1) clearInterval(timer);
+        if (this.state.timeLeft < 1) {
+          clearInterval(timer)
+        } else {
+          this.setState({
+            timeLeft: this.state.timeLeft - 1
+          })
+        }
       }, 1000);
 
     } catch (err) {
@@ -50,23 +59,39 @@ class App extends Component {
   }
 
   handleCommitButtonClick() {
+    // get current UNIX timestamp and round to nearest second
     let newDate = Math.round(new Date().getTime() / 1000);
+
+    // calculate linear regression again. returns m & b from equation y = x * m + b
     let linearRegressionResult = linearRegressionCalc([this.state.data.length], [newDate]);
 
     // find the remaining time from current commit to the 2000th commit
-    let remainingTimeInSeconds = (linearRegressionResult.m * (2000) + linearRegressionResult.b) - (linearRegressionResult.m * (this.state.data.length) + linearRegressionResult.b)
-    console.log('remaining time in seconds', remainingTimeInSeconds)
+    let remainingTimeInSeconds = (linearRegressionResult.m * (2000) + linearRegressionResult.b) - (linearRegressionResult.m * (this.state.data.length + 1) + linearRegressionResult.b)
 
     // add date to data
     let updatedData = this.state.data
     updatedData.push(newDate)
 
-    // set state with fetched data and remaining time
+    // set state with fetched data and remaining time. if time is up disable button and render modal.
+    if (!remainingTimeInSeconds) {
+      this.setState({
+        data: updatedData,
+        timeLeft: 0,
+        commitButtonDisabled: true,
+        toggleModal: true
+      })
+    } else {
+      this.setState({
+        data: updatedData,
+        timeLeft: remainingTimeInSeconds
+      })
+    }
+  }
+
+  handleModalClose() {
     this.setState({
-      data: updatedData,
-      timeLeft: remainingTimeInSeconds,
+      toggleModal: false
     })
-    console.log('data length', this.state.data.length)
   }
 
   render() {
@@ -78,29 +103,43 @@ class App extends Component {
     return (
       <div className="App">
       <Container style={{ padding: 200}}>
+
       <Header inverted color="teal" size="huge" textAlign="center">Estimated Time Until the 2000th Commit</Header>
 
+      <Modal open={this.state.toggleModal} centered basic>
+        <Modal.Content>
+          <Grid container textAlign="center">
+            <Grid.Row>
+              <Header inverted as="h1" color="yellow">2000th Commit Made!</Header>
+            </Grid.Row>
+            <Grid.Row>
+              <Button onClick={this.handleModalClose} color="red">Close Window</Button>
+            </Grid.Row>
+          </Grid>
+        </Modal.Content>
+      </Modal>
+
       <Container textAlign="center" style={{padding: 30}}>
-        <Statistic color="red" inverted>
+        <Statistic color="red" inverted style={{padding: 5}}>
           <Statistic.Value>{days}</Statistic.Value>
           <Statistic.Label>Days</Statistic.Label>
         </Statistic>
-        <Statistic color='red' inverted>
+        <Statistic color='red' inverted style={{padding: 5}}>
           <Statistic.Value>{hours}</Statistic.Value>
           <Statistic.Label>Hours</Statistic.Label>
         </Statistic>
-        <Statistic color='red' inverted>
+        <Statistic color='red' inverted style={{padding: 5}}>
           <Statistic.Value>{minutes}</Statistic.Value>
           <Statistic.Label>Minutes</Statistic.Label>
         </Statistic>
-        <Statistic color='red' inverted>
+        <Statistic color='red' inverted style={{padding: 5}}>
           <Statistic.Value>{seconds}</Statistic.Value>
           <Statistic.Label>seconds</Statistic.Label>
         </Statistic>
       </Container>
 
       <Container textAlign="center" style={{padding: 30}}>
-        <Button inverted color="teal" onClick={this.handleCommitButtonClick} size="large">Add a Commit</Button>
+        <Button inverted color="teal" onClick={this.handleCommitButtonClick} size="large" disabled={this.state.commitButtonDisabled}>Add a Commit</Button>
       </Container>
       </Container>
       </div>
