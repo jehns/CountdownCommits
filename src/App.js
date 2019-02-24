@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import linearRegressionWrapper from './scripts/linearRegression';
-
+import { Statistic, Segment } from 'semantic-ui-react';
 
 class App extends Component {
   constructor() {
@@ -39,6 +39,7 @@ class App extends Component {
 
     // call setInterval on window object to update the estimated remaining time on state
     setInterval(() => {
+      if (this.state.timeLeft < 1) clearInterval();
       this.setState({
         data: [],
         timeLeft: this.state.timeLeft - 1
@@ -54,12 +55,24 @@ class App extends Component {
     let seconds = Math.floor((this.state.timeLeft % (60)));
     return (
       <div className="App">
-        <ul>
-        <li>days{days}</li>
-        <li>hours{hours}</li>
-        <li>minutes{minutes}</li>
-        <li>seconds{seconds}</li>
-        </ul>
+      <Segment inverted>
+        <Statistic color='red' inverted>
+          <Statistic.Value>{days}</Statistic.Value>
+          <Statistic.Label>Days</Statistic.Label>
+        </Statistic>
+        <Statistic color='red' inverted>
+          <Statistic.Value>{hours}</Statistic.Value>
+          <Statistic.Label>Hours</Statistic.Label>
+        </Statistic>
+        <Statistic color='red' inverted>
+          <Statistic.Value>{minutes}</Statistic.Value>
+          <Statistic.Label>Minutes</Statistic.Label>
+        </Statistic>
+        <Statistic color='red' inverted>
+          <Statistic.Value>{seconds}</Statistic.Value>
+          <Statistic.Label>seconds</Statistic.Label>
+        </Statistic>
+      </Segment>
       </div>
     );
   }
