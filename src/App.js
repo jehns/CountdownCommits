@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import linearRegressionWrapper from './scripts/linearRegression';
-import { Statistic, Segment } from 'semantic-ui-react';
+import { Statistic, Container, Header, Button } from 'semantic-ui-react';
 
 class App extends Component {
   constructor() {
@@ -25,8 +25,6 @@ class App extends Component {
 
     // calculate linear regression with api data
     let linearRegressionResult = linearRegressionCalc(xValues, yValues)
-
-    console.log('linear reg', linearRegressionResult)
 
     // Find the remaining time from current commit to the 2000th commit
     let remainingTimeInSeconds = (linearRegressionResult.m*(2000) + linearRegressionResult.b) - (linearRegressionResult.m*(xValues.length) + linearRegressionResult.b)
@@ -53,10 +51,14 @@ class App extends Component {
     let hours = Math.floor((this.state.timeLeft % (60 * 60 * 24)) / (60 * 60));
     let minutes = Math.floor((this.state.timeLeft % (60 * 60)) / (60));
     let seconds = Math.floor((this.state.timeLeft % (60)));
+
     return (
       <div className="App">
-      <Segment inverted>
-        <Statistic color='red' inverted>
+      <Container style={{ padding: 200}}>
+      <Header inverted color="teal" size="huge" textAlign="center">Estimated Time Until the 2000th Commit</Header>
+
+      <Container textAlign="center" style={{padding: 30}}>
+        <Statistic color="red" inverted>
           <Statistic.Value>{days}</Statistic.Value>
           <Statistic.Label>Days</Statistic.Label>
         </Statistic>
@@ -72,7 +74,12 @@ class App extends Component {
           <Statistic.Value>{seconds}</Statistic.Value>
           <Statistic.Label>seconds</Statistic.Label>
         </Statistic>
-      </Segment>
+      </Container>
+
+      <Container textAlign="center" style={{padding: 30}}>
+        <Button inverted color="teal">Add a Commit</Button>
+      </Container>
+      </Container>
       </div>
     );
   }
