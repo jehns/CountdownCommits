@@ -5,9 +5,13 @@ const linearRegressionWrapper = () => {
   }
 
   return (xValues, yValues) => {
-
+    /*
+    If this is not the first time the function has been called, use closed over values cached in previousValues
+    */
     if (previousValues.hasBeenCalled) {
-      // init previous variables with new values
+      /*
+      init previous variables with new values
+      */
       let x = xValues[0]
       let y = yValues[0]
       let sumX = previousValues.sumX + x;
@@ -17,8 +21,8 @@ const linearRegressionWrapper = () => {
       let count = previousValues.count + 1;
 
       /*
-        Remember the values for next function call
-        */
+      Remember the values for next function call
+      */
       previousValues.hasBeenCalled = true;
       previousValues.sumX = sumX;
       previousValues.sumY = sumY;
@@ -27,8 +31,7 @@ const linearRegressionWrapper = () => {
       previousValues.count = count;
 
       /*
-      * Calculate m and b for the formula:
-      * y = x * m + b
+      Calculate m and b for the formula: y = x * m + b
       */
       let m = (count*sumXY - sumX*sumY) / (count*sumXX - sumX*sumX);
       let b = (sumY/count) - (m*sumX)/count;
@@ -38,26 +41,22 @@ const linearRegressionWrapper = () => {
     }
 
     /*
-    If this is the first time the function has been called, initialize variables to zero
+    This is the first time the function has been called, initialize variables to zero
     */
+    let x = 0;
+    let y = 0;
     let sumX = 0;
     let sumY = 0;
     let sumXY = 0;
     let sumXX = 0;
     let count = 0;
 
-    /*
-    * We'll use those variables for faster read/write access.
-    */
-    let x = 0;
-    let y = 0;
-
     if (xValues.length !== yValues.length) {
       throw new Error('The parameters xValues and yValues need to have same size!');
     }
 
     /*
-    * Calculate the sum for each of the parts necessary.
+    Calculate the sum for each of the parts necessary.
     */
     for (let i = 0; i < xValues.length; i++) {
       x = xValues[i];
@@ -80,8 +79,7 @@ const linearRegressionWrapper = () => {
     previousValues.count = count;
 
     /*
-    * Calculate m and b for the formula:
-    * y = x * m + b
+    Calculate m and b for the formula: y = x * m + b
     */
     let m = (count*sumXY - sumX*sumY) / (count*sumXX - sumX*sumX);
     let b = (sumY/count) - (m*sumX)/count;

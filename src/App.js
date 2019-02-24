@@ -12,59 +12,61 @@ class App extends Component {
     super()
     this.state={
       data: [],
-      timeLeft: 0,
-      linearRegressionCalc: ()=>{}
+      timeLeft: 0
     }
     this.handleCommitButtonClick = this.handleCommitButtonClick.bind(this)
   }
 
   async componentDidMount() {
-    const {data} = await axios.get('https://api.staging.coord.co/codechallenge/commits')
-    let xValues = new Array(data.length).fill(1).map((num, i) => i)
-    let yValues = data.reverse()
-    console.log(yValues, xValues)
+    try {
+      const { data } = await axios.get('https://api.staging.coord.co/codechallenge/commits')
+      let xValues = new Array(data.length).fill(1).map((num, i) => i)
+      let yValues = data.reverse()
 
+      // calculate linear regression with api data
+      let linearRegressionResult = linearRegressionCalc(xValues, yValues)
 
-    // calculate linear regression with api data
-    let linearRegressionResult = linearRegressionCalc(xValues, yValues)
+      // find the remaining time from current commit to the 2000th commit
+      let remainingTimeInSeconds = (linearRegressionResult.m * (2000) + linearRegressionResult.b) - (linearRegressionResult.m * (xValues.length) + linearRegressionResult.b)
 
-    console.log('result',linearRegressionResult)
-
-    // Find the remaining time from current commit to the 2000th commit
-    let remainingTimeInSeconds = (linearRegressionResult.m*(2000) + linearRegressionResult.b) - (linearRegressionResult.m*(xValues.length) + linearRegressionResult.b)
-
-    // set state with fetched data and remaining time
-    this.setState({
-      data: yValues,
-      timeLeft: remainingTimeInSeconds
-    })
-
-    // call setInterval to update the estimated remaining time on state
-    let timer = setInterval(() => {
+      // set state with fetched data and remaining time
       this.setState({
-        timeLeft: this.state.timeLeft - 1
+        data: yValues,
+        timeLeft: remainingTimeInSeconds
       })
-      if (this.state.timeLeft < 1) clearInterval(timer);
-    }, 1000);
+
+      // call setInterval to update the estimated remaining time on state
+      let timer = setInterval(() => {
+        this.setState({
+          timeLeft: this.state.timeLeft - 1
+        })
+        if (this.state.timeLeft < 1) clearInterval(timer);
+      }, 1000);
+
+    } catch (err) {
+      console.log(err)
+    }
 
   }
 
   handleCommitButtonClick() {
-    let date = Math.round(new Date().getTime()/1000);
-    let linearRegressionResult = linearRegressionCalc([this.state.data.length], [date]);
+    let newDate = Math.round(new Date().getTime() / 1000);
+    let linearRegressionResult = linearRegressionCalc([this.state.data.length], [newDate]);
 
-    // Find the remaining time from current commit to the 2000th commit
-    let remainingTimeInSeconds = (linearRegressionResult.m*(2000) + linearRegressionResult.b) - (linearRegressionResult.m*(this.state.data.length) + linearRegressionResult.b)
+    // find the remaining time from current commit to the 2000th commit
+    let remainingTimeInSeconds = (linearRegressionResult.m * (2000) + linearRegressionResult.b) - (linearRegressionResult.m * (this.state.data.length) + linearRegressionResult.b)
+    console.log('remaining time in seconds', remainingTimeInSeconds)
 
     // add date to data
     let updatedData = this.state.data
-    updatedData.push(date)
+    updatedData.push(newDate)
 
     // set state with fetched data and remaining time
     this.setState({
       data: updatedData,
       timeLeft: remainingTimeInSeconds,
     })
+    console.log('data length', this.state.data.length)
   }
 
   render() {
@@ -98,7 +100,7 @@ class App extends Component {
       </Container>
 
       <Container textAlign="center" style={{padding: 30}}>
-        <Button inverted color="teal" onClick={this.handleCommitButtonClick}>Add a Commit</Button>
+        <Button inverted color="teal" onClick={this.handleCommitButtonClick} size="large">Add a Commit</Button>
       </Container>
       </Container>
       </div>
