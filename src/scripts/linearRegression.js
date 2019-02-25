@@ -12,8 +12,8 @@ const linearRegressionWrapper = () => {
       /*
       init previous variables with new values
       */
-      let x = xValues[0]
-      let y = yValues[0]
+      let x = xValues[0];
+      let y = yValues[0];
       let sumX = previousValues.sumX + x;
       let sumY = previousValues.sumY + y;
       let sumXY = previousValues.sumXY + x*y;

@@ -15,30 +15,30 @@ class App extends Component {
       commitButtonDisabled: false,
       toggleModal: false
     }
-    this.handleCommitButtonClick = this.handleCommitButtonClick.bind(this)
-    this.handleModalClose = this.handleModalClose.bind(this)
+    this.handleCommitButtonClick = this.handleCommitButtonClick.bind(this);
+    this.handleModalClose = this.handleModalClose.bind(this);
   }
 
   async componentDidMount() {
     try {
       // fetch commit data from API.
-      const { data } = await axios.get('https://api.staging.coord.co/codechallenge/commits')
+      const { data } = await axios.get('https://api.staging.coord.co/codechallenge/commits');
 
       // initialize data for linear regression calculation
-      let xValues = new Array(data.length).fill(1).map((num, i) => i)
-      let yValues = data.reverse()
+      let xValues = new Array(data.length).fill(1).map((num, i) => i);
+      let yValues = data.reverse();
 
       // calculate linear regression of api data. returns m & b from equation y = x * m + b
-      let linearRegressionResult = linearRegressionCalc(xValues, yValues)
+      let linearRegressionResult = linearRegressionCalc(xValues, yValues);
 
       // find the remaining time from current commit to the 2000th commit
-      let remainingTimeInSeconds = (linearRegressionResult.m * (2000) + linearRegressionResult.b) - (linearRegressionResult.m * (xValues.length) + linearRegressionResult.b)
+      let remainingTimeInSeconds = (linearRegressionResult.m * (2000) + linearRegressionResult.b) - (linearRegressionResult.m * (xValues.length) + linearRegressionResult.b);
 
       // set state with fetched data and remaining time
       this.setState({
         data: yValues,
         timeLeft: remainingTimeInSeconds
-      })
+      });
 
       // use setInterval to update the estimated remaining time on state every second
       let timer = setInterval(() => {
@@ -52,7 +52,7 @@ class App extends Component {
       }, 1000);
 
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
 
   }
@@ -65,11 +65,11 @@ class App extends Component {
     let linearRegressionResult = linearRegressionCalc([this.state.data.length], [newDate]);
 
     // find the remaining time from current commit to the 2000th commit
-    let remainingTimeInSeconds = (linearRegressionResult.m * (2000) + linearRegressionResult.b) - (linearRegressionResult.m * (this.state.data.length + 1) + linearRegressionResult.b)
+    let remainingTimeInSeconds = (linearRegressionResult.m * (2000) + linearRegressionResult.b) - (linearRegressionResult.m * (this.state.data.length + 1) + linearRegressionResult.b);
 
     // add date to data
-    let updatedData = this.state.data
-    updatedData.push(newDate)
+    let updatedData = this.state.data;
+    updatedData.push(newDate);
 
     // set state with fetched data and remaining time. if time is up disable button and render modal.
     if (!remainingTimeInSeconds) {
@@ -78,19 +78,19 @@ class App extends Component {
         timeLeft: 0,
         commitButtonDisabled: true,
         toggleModal: true
-      })
+      });
     } else {
       this.setState({
         data: updatedData,
         timeLeft: remainingTimeInSeconds
-      })
+      });
     }
   }
 
   handleModalClose() {
     this.setState({
       toggleModal: false
-    })
+    });
   }
 
   render() {
