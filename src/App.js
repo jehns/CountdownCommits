@@ -6,7 +6,6 @@ import axios from 'axios';
 // global variable -> creates function for finding linear regression
 const linearRegressionCalc = linearRegressionWrapper()
 
-
 class App extends Component {
   constructor() {
     super()
@@ -134,7 +133,7 @@ class App extends Component {
         </Statistic>
         <Statistic color='red' inverted style={{padding: 5}}>
           <Statistic.Value>{seconds}</Statistic.Value>
-          <Statistic.Label>seconds</Statistic.Label>
+          <Statistic.Label>Seconds</Statistic.Label>
         </Statistic>
       </Container>
 
