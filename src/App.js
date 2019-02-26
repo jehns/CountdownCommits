@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import linearRegressionWrapper from './scripts/linearRegression';
+import linearRegressionWrapper from './functions/linearRegression';
 import { Statistic, Container, Header, Button, Modal, Grid } from 'semantic-ui-react';
 import axios from 'axios';
 

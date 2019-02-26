@@ -1,3 +1,28 @@
+/*
+
+**** Procedure for Least Squares Method for Calculating Linear Regression ****
+
+
+Step 1:	For each (x,y) calculate x2 and xy
+
+Step 2:	Sum all x, y, x2 and xy, which gives us Σx, Σy, Σx2 and Σxy (Σ means "sum up")
+
+Step 3:	Calculate Slope m:
+
+m =  (NΣxy − Σx Σy)N(Σx2) − (Σx)2
+
+(N is the number of points.)
+
+Step 4:	Calculate Intercept b:
+
+b =  Σy − m(Σx)N
+
+Step 5: Assemble the equation of a line
+
+y = mx + b
+
+*/
+
 const linearRegressionWrapper = () => {
 
   let previousValues = {
