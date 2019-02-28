@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import linearRegressionWrapper from './functions/linearRegression';
-import { Statistic, Container, Header, Button, Modal, Grid } from 'semantic-ui-react';
+import { Container, Header, Button, Modal, Grid } from 'semantic-ui-react';
 import axios from 'axios';
+import CountdownNumbers from './CountdownNumbers';
 
 // global variable -> creates function for finding linear regression
-const linearRegressionCalc = linearRegressionWrapper()
+const linearRegressionCalc = linearRegressionWrapper();
 
 class App extends Component {
   constructor() {
@@ -104,6 +105,8 @@ class App extends Component {
     let hours = Math.floor((this.state.timeLeft % (60 * 60 * 24)) / (60 * 60));
     let minutes = Math.floor((this.state.timeLeft % (60 * 60)) / (60));
     let seconds = Math.floor((this.state.timeLeft % (60)));
+    const daysHoursMinutesSeconds = [ days, hours, minutes, seconds ];
+    const daysHoursMinutesSecondsLabel = ['Days', 'Hours', 'Minutes', 'Seconds'];
 
     return (
       <div className="App">
@@ -125,22 +128,7 @@ class App extends Component {
       </Modal>
 
       <Container textAlign="center" style={{padding: 30}}>
-        <Statistic color="red" inverted style={{padding: 5}}>
-          <Statistic.Value>{days}</Statistic.Value>
-          <Statistic.Label>Days</Statistic.Label>
-        </Statistic>
-        <Statistic color='red' inverted style={{padding: 5}}>
-          <Statistic.Value>{hours}</Statistic.Value>
-          <Statistic.Label>Hours</Statistic.Label>
-        </Statistic>
-        <Statistic color='red' inverted style={{padding: 5}}>
-          <Statistic.Value>{minutes}</Statistic.Value>
-          <Statistic.Label>Minutes</Statistic.Label>
-        </Statistic>
-        <Statistic color='red' inverted style={{padding: 5}}>
-          <Statistic.Value>{seconds}</Statistic.Value>
-          <Statistic.Label>Seconds</Statistic.Label>
-        </Statistic>
+        {daysHoursMinutesSeconds.map((time, i) => <CountdownNumbers key={i} time={time} label={daysHoursMinutesSecondsLabel[i]}/>)}
       </Container>
 
       <Container textAlign="center" style={{padding: 30}}>
