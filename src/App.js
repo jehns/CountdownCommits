@@ -41,9 +41,9 @@ class App extends Component {
       });
 
       // use setInterval to update the estimated remaining time on state every second
-      let timer = setInterval(() => {
+      this.timer = setInterval(() => {
         if (this.state.timeLeft < 1) {
-          clearInterval(timer)
+          clearInterval(this.timer)
         } else {
           this.setState({
             timeLeft: this.state.timeLeft - 1
@@ -56,6 +56,12 @@ class App extends Component {
     }
 
   }
+
+  componentWillUnmount() {
+    // Clear the interval right before component unmount
+    clearInterval(this.timer);
+  }
+
 
   handleCommitButtonClick() {
     // get current UNIX timestamp and round to nearest second
